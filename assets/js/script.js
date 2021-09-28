@@ -11,7 +11,7 @@ function loadScheduler(){
         task = {
             taskId: i,
             taskTime: "",
-            taskDetails: "aa",
+            taskDetails: "",
         }
         createScheduler(starterHour, moment(starterHour, "HH").format("hh a"), task);
         starterHour++
@@ -39,9 +39,9 @@ function createScheduler(hour, timeText, task){
         taskClasses = "col bg-success bg-gradient text-white d-flex justify-content-start align-items-center";
     }
     
-    var taskCol = $("<div>").addClass(taskClasses + " task-status").append(taskColText);
-    var saveColText = $("<span>").text("save");
-    var saveCol = $("<div>").addClass("col-xs-1 bg-info d-flex justify-content-center align-items-center p-3 savebtn ").attr("id", "task-" + task.taskId).append(saveColText);
+    var taskCol = $("<div>").addClass(taskClasses + " task-status").attr("id", "taskDetails-" + task.taskId).append(taskColText);
+    var saveColText = $("<i>").addClass("fas fa-save");
+    var saveCol = $("<button>").addClass("col-xs-1 btn btn-info d-flex justify-content-center align-items-center p-4 savebtn").attr({"id": "task-" + task.taskId, "disabled": true}).append(saveColText);
     col.append(timeCol);
     col.append(taskCol);
     col.append(saveCol);
@@ -70,7 +70,11 @@ function loadTasks() {
     $("#timeBlocks").empty();
     // loop through savedTasks array
     for (var i = 0; i < savedTasks.length; i++) {
-        createScheduler(starterHour, savedTasks[i].taskTime,savedTasks[i])
+        createScheduler(starterHour, savedTasks[i].taskTime,savedTasks[i]);
+        starterHour++
+        if(starterHour === 24){
+            starterHour = 0;
+        }
     }
   };
 
@@ -85,6 +89,8 @@ $(".task-status").on("click", function() {
   .text()
   .trim();
   
+    var oldTaskId = parseInt($(this).attr('id').replace("taskDetails-", ""));
+    $("#task-"+oldTaskId).attr("disabled", false);
   // replace p element with a new textarea
     var textInput = $("<textarea>").addClass("form-control task-value").val(text);
     $(this).children('span').replaceWith(textInput);
@@ -94,7 +100,7 @@ $(".task-status").on("click", function() {
  $(".savebtn").on("click", function() {
     var taskNewDetails = $(".task-value").val();
 
-    oldTaskId = parseInt($(this).attr('id').replace("task-", ""));
+    var oldTaskId = parseInt($(this).attr('id').replace("task-", ""));
 
     console.log(oldTaskId);
     tasks[oldTaskId].taskDetails = taskNewDetails;
