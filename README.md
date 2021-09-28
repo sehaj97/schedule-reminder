@@ -9,8 +9,6 @@ simple calendar application that allows a user to save events for each hour of t
 
 This app will run in the browser and feature dynamically updated HTML and CSS powered by jQuery, bootstrap and momentjs.
 
-## NOTE: you can edit one task at one time
-
 ## Screenshots
 
 ### screenshot when page loads
@@ -19,3 +17,5 @@ This app will run in the browser and feature dynamically updated HTML and CSS po
 ![Screenshot](assets/images/2.PNG)
 ### screenshot for edit and save updates
 ![Screenshot](assets/images/3.PNG)
+### screenshot for error message if you try to edit before saving
+![Screenshot](assets/images/4.PNG)
