@@ -51,11 +51,11 @@ function createScheduler(hour, timeText, task){
 }
 
 function saveTasks() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
+    localStorage.setItem("reminder-app-tasks", JSON.stringify(tasks));
 };
 
 function loadTasks() {
-    var savedTasks = localStorage.getItem("tasks");
+    var savedTasks = localStorage.getItem("reminder-app-tasks");
 
     if (!savedTasks) {
       loadScheduler();
