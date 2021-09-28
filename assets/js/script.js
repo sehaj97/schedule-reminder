@@ -57,6 +57,7 @@ function saveTasks() {
 function loadTasks() {
     var savedTasks = localStorage.getItem("reminder-app-tasks");
 
+    $("#msg").addClass("d-none");
     if (!savedTasks) {
       loadScheduler();
       saveTasks();
@@ -83,7 +84,9 @@ loadTasks();
 
 // task text was clicked
 $(".task-status").on("click", function() {
-    
+    if ($(".active-textarea").length > 0) {
+        $("#msg").removeClass("d-none");
+    }
     var text = $(this)
     .text()
     .trim();
@@ -91,8 +94,8 @@ $(".task-status").on("click", function() {
     var oldTaskId = parseInt($(this).attr('id').replace("taskDetails-", ""));
     if ($(".active-save").length === 0) {
         $("#task-"+oldTaskId).attr("disabled", false).addClass("active-save");
-    }
-    else{
+        $("#taskDetails-"+oldTaskId).addClass("active-textarea");
+    } else {
         $("textarea").focus();
         return false;
     }
