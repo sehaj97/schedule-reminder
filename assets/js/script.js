@@ -78,26 +78,31 @@ function loadTasks() {
     }
   };
 
-
 $("#currentDay").text(today);
 loadTasks();
 
 // task text was clicked
 $(".task-status").on("click", function() {
-      // get current text of p element
-  var text = $(this)
-  .text()
-  .trim();
+    
+    var text = $(this)
+    .text()
+    .trim();
   
     var oldTaskId = parseInt($(this).attr('id').replace("taskDetails-", ""));
-    $("#task-"+oldTaskId).attr("disabled", false);
-  // replace p element with a new textarea
+    if ($(".active-save").length === 0) {
+        $("#task-"+oldTaskId).attr("disabled", false).addClass("active-save");
+    }
+    else{
+        $("textarea").focus();
+        return false;
+    }
     var textInput = $("<textarea>").addClass("form-control task-value").val(text);
     $(this).children('span').replaceWith(textInput);
 });
 
 
  $(".savebtn").on("click", function() {
+    
     var taskNewDetails = $(".task-value").val();
 
     var oldTaskId = parseInt($(this).attr('id').replace("task-", ""));
