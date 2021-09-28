@@ -1,6 +1,6 @@
 var today = moment().format('dddd, MMMM DD');
 var currentHour = moment().hour();
-var currentHourCounter = currentHour;
+var starterHour = currentHour - 4;
 
 function createScheduler(hour, timeText){
  var row = $("<tr>").addClass("reminder-10am");
@@ -29,5 +29,9 @@ if (hour > currentHour){
 
 $("#currentDay").text(today);
 for (let i = 1; i <= 24; i++) { 
-    createScheduler(i, moment(i, "HH").format("hh a"));
+    createScheduler(i, moment(starterHour, "HH").format("hh a"));
+    if(starterHour === 24){
+        starterHour = 0;
+    }
+    starterHour++
 }
