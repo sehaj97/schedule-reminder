@@ -1,37 +1,105 @@
 var today = moment().format('dddd, MMMM DD');
 var currentHour = moment().hour();
 var starterHour = 9;
+var taskClasses = "";
+var tasks = [];
 
-function createScheduler(hour, timeText){
- var row = $("<tr>").addClass("reminder-10am");
- var col = $("<td>").addClass("p-1 row");
- var timeColText = $("<span>").text(timeText);
- var timeCol = $("<div>").addClass("col-xs-1 d-flex justify-content-center align-items-center p-3").append(timeColText);
- var taskColText = $("<span>").text("10 AM");
- if (hour < currentHour){
-    var taskCol = $("<div>").addClass("col bg-secondary bg-gradient text-white d-flex justify-content-start align-items-center").append(taskColText);
-}
-if (hour === currentHour){
-   var taskCol = $("<div>").addClass("col bg-danger bg-gradient text-white d-flex justify-content-start align-items-center").append(taskColText);
-}
-if (hour > currentHour){
-   var taskCol = $("<div>").addClass("col bg-success bg-gradient text-white d-flex justify-content-start align-items-center").append(taskColText);
-}
- var saveColText = $("<span>").text("save");
- var saveCol = $("<div>").addClass("col-xs-1 bg-info d-flex justify-content-center align-items-center p-3").append(saveColText);
- col.append(timeCol);
- col.append(taskCol);
- col.append(saveCol);
- row.append(col);
- $("#timeBlocks").append(row);
+var task = {};
 
-}
-
-$("#currentDay").text(today);
-for (let i = 0; i < 24; i++) { 
-    createScheduler(starterHour, moment(starterHour, "HH").format("hh a"));
-    starterHour++
-    if(starterHour === 24){
-        starterHour = 0;
+function loadScheduler(){
+    for (let i = 0; i < 24; i++) { 
+        task = {
+            taskId: i,
+            taskTime: "",
+            taskDetails: "aa",
+        }
+        createScheduler(starterHour, moment(starterHour, "HH").format("hh a"), task);
+        starterHour++
+        if(starterHour === 24){
+            starterHour = 0;
+        }
     }
 }
+
+function createScheduler(hour, timeText, task){
+    var row = $("<tr>");
+    var col = $("<td>").addClass("p-1 row");
+    var timeColText = $("<span>").text(timeText);
+    task.taskTime = timeText;
+    var timeCol = $("<div>").addClass("col-xs-1 d-flex justify-content-center align-items-center p-3").append(timeColText);
+    var taskColText = $("<span>").text(task.taskDetails);
+
+    if (hour < currentHour){
+        taskClasses = "col bg-secondary bg-gradient text-white d-flex justify-content-start align-items-center";
+    }
+    if (hour === currentHour){
+        taskClasses = "col bg-danger bg-gradient text-white d-flex justify-content-start align-items-center";
+    }
+    if (hour > currentHour){
+        taskClasses = "col bg-success bg-gradient text-white d-flex justify-content-start align-items-center";
+    }
+    
+    var taskCol = $("<div>").addClass(taskClasses + " task-status").append(taskColText);
+    var saveColText = $("<span>").text("save");
+    var saveCol = $("<div>").addClass("col-xs-1 bg-info d-flex justify-content-center align-items-center p-3 savebtn ").attr("id", "task-" + task.taskId).append(saveColText);
+    col.append(timeCol);
+    col.append(taskCol);
+    col.append(saveCol);
+    row.append(col);
+    $("#timeBlocks").append(row);
+    tasks.push(task);
+}
+
+function saveTasks() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+};
+
+function loadTasks() {
+    var savedTasks = localStorage.getItem("tasks");
+
+    if (!savedTasks) {
+      loadScheduler();
+      saveTasks();
+      return false;
+    }
+    console.log("Saved tasks found!");
+  
+    // parse into array of objects
+    savedTasks = JSON.parse(savedTasks);
+    starterHour = 9;
+    $("#timeBlocks").empty();
+    // loop through savedTasks array
+    for (var i = 0; i < savedTasks.length; i++) {
+        createScheduler(starterHour, savedTasks[i].taskTime,savedTasks[i])
+    }
+  };
+
+
+$("#currentDay").text(today);
+loadTasks();
+
+// task text was clicked
+$(".task-status").on("click", function() {
+      // get current text of p element
+  var text = $(this)
+  .text()
+  .trim();
+  
+  // replace p element with a new textarea
+    var textInput = $("<textarea>").addClass("form-control task-value").val(text);
+    $(this).children('span').replaceWith(textInput);
+});
+
+
+ $(".savebtn").on("click", function() {
+    var taskNewDetails = $(".task-value").val();
+
+    oldTaskId = parseInt($(this).attr('id').replace("task-", ""));
+
+    console.log(oldTaskId);
+    tasks[oldTaskId].taskDetails = taskNewDetails;
+    saveTasks();
+    loadTasks();
+    window.location.reload();
+
+});
